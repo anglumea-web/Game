@@ -1,144 +1,366 @@
 <!DOCTYPE html>
-
-<html lang="en">
-
+<html lang="id">
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>ChessWeb - Online Chess Game</title>
-
-<link rel="stylesheet" href="css/main.css">
-
-<style>
-
-body {
-
-margin: 0;
-
-padding: 0;
-
-font-family: 'Arial', sans-serif;
-
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-
-height: 100vh;
-
-display: flex;
-
-justify-content: center;
-
-align-items: center;
-
-}
-
-.redirect-container {
-
-text-align: center;
-
-background: rgba(255, 255, 255, 0.95);
-
-padding: 40px;
-
-border-radius: 15px;
-
-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-
-max-width: 400px;
-
-}
-
-.chess-icon {
-
-font-size: 4rem;
-
-margin-bottom: 20px;
-
-}
-
-h1 {
-
-color: #333;
-
-margin-bottom: 20px;
-
-font-size: 2.5rem;
-
-}
-
-.loading-text {
-
-color: #666;
-
-font-size: 1.2rem;
-
-margin-bottom: 30px;
-
-}
-
-.spinner {
-
-border: 4px solid #f3f3f3;
-
-border-top: 4px solid #667eea;
-
-border-radius: 50%;
-
-width: 40px;
-
-height: 40px;
-
-animation: spin 1s linear infinite;
-
-margin: 0 auto;
-
-}
-
-@keyframes spin {
-
-0% { transform: rotate(0deg); }
-
-100% { transform: rotate(360deg); }
-
-}
-
-</style>
-
-
-
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0,
+                 viewport-fit=cover, user-scalable=no, maximum-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#000000">
+  <title>Chess</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
 
-<div class="redirect-container">
-
-<div class="chess-icon">♔</div>
-
-<h1>ChessWeb</h1>
-
-<p class="loading-text">Starting your chess game...</p>
-
-<div class="spinner"></div>
-
+<!-- ══════════════════════════════════
+     STATUS BAR — jam saja, tanpa sinyal/baterai
+══════════════════════════════════ -->
+<div class="sbar">
+  <span class="sbar-time" id="sbarTime">9:41</span>
 </div>
 
 
-<script>
+<!-- ══════════════════════════════════
+     LOBBY SCREEN
+══════════════════════════════════ -->
+<div id="lobbyScreen">
+  <div style="height:max(var(--safe-t),47px);flex-shrink:0;"></div>
 
-// Redirect to the chess game board after a brief loading animation
+  <div class="lobby-scroll">
 
-setTimeout(function() {
+    <!-- Hero -->
+    <div class="lobby-hero">
+      <span class="lobby-icon">♟</span>
+      <div class="lobby-title">Chess</div>
+      <div class="lobby-sub">Pilih mode permainan untuk memulai</div>
+    </div>
 
-window.location.href = 'pages/chess_game_board.html';
+    <!-- Mode Permainan -->
+    <div class="sec-label">Mode Permainan</div>
+    <div class="mode-grid">
+      <div class="mode-card sel" id="modeAI" onclick="selectMode('ai')">
+        <div class="mode-check">✓</div>
+        <div class="mode-icon">🤖</div>
+        <div class="mode-name">Lawan AI</div>
+        <div class="mode-desc">Uji strategi melawan kecerdasan buatan</div>
+      </div>
+      <div class="mode-card" id="modePVP" onclick="selectMode('pvp')">
+        <div class="mode-check">✓</div>
+        <div class="mode-icon">👥</div>
+        <div class="mode-name">2 Pemain</div>
+        <div class="mode-desc">Bermain bersama teman di satu perangkat</div>
+      </div>
+    </div>
 
-}, 2000);
+    <!-- Opsi AI -->
+    <div id="aiOptions">
+      <div class="sec-label">Tingkat Kesulitan</div>
+      <div class="diff-row">
+        <button class="diff-btn sel" data-d="easy" onclick="selectDiff('easy')">
+          <div class="diff-icon">🌱</div>
+          <div class="diff-name">Mudah</div>
+          <div class="diff-desc">Untuk pemula</div>
+        </button>
+        <button class="diff-btn" data-d="medium" onclick="selectDiff('medium')">
+          <div class="diff-icon">⚔️</div>
+          <div class="diff-name">Menengah</div>
+          <div class="diff-desc">Tantangan nyata</div>
+        </button>
+        <button class="diff-btn" data-d="hard" onclick="selectDiff('hard')">
+          <div class="diff-icon">🧠</div>
+          <div class="diff-name">Sulit</div>
+          <div class="diff-desc">Grandmaster</div>
+        </button>
+      </div>
 
-</script>
+      <div class="sec-label">Pilih Warna</div>
+      <div class="color-row">
+        <button class="color-card wc sel" id="colorW" onclick="selectColor('white')">
+          <div class="color-piece">♔</div>
+          <div class="color-name">Putih</div>
+          <div class="color-hint">Gerak pertama</div>
+        </button>
+        <button class="color-card bc" id="colorB" onclick="selectColor('black')">
+          <div class="color-piece">♚</div>
+          <div class="color-name">Hitam</div>
+          <div class="color-hint">AI duluan</div>
+        </button>
+        <button class="color-card rc" id="colorR" onclick="selectColor('random')">
+          <div class="color-piece">🎲</div>
+          <div class="color-name">Acak</div>
+          <div class="color-hint">Kejutan!</div>
+        </button>
+      </div>
+    </div>
 
-<script id="dhws-dataInjector" src="/public/dhws-data-injector.js"></script>
+    <!-- Waktu -->
+    <div class="sec-label">Waktu Per Pemain</div>
+    <div class="time-row">
+      <button class="time-chip"     data-m="3"  onclick="selectTime(3)">3 mnt</button>
+      <button class="time-chip"     data-m="5"  onclick="selectTime(5)">5 mnt</button>
+      <button class="time-chip on"  data-m="10" onclick="selectTime(10)">10 mnt</button>
+      <button class="time-chip"     data-m="15" onclick="selectTime(15)">15 mnt</button>
+      <button class="time-chip"     data-m="0"  onclick="selectTime(0)">∞</button>
+    </div>
+
+    <!-- Tema Papan -->
+    <div class="sec-label">Tema Papan</div>
+    <div class="theme-grid" id="themeGrid"></div>
+
+    <!-- Start -->
+    <button class="start-btn" onclick="startGame()">Mulai Permainan →</button>
+
+  </div><!-- /lobby-scroll -->
+</div><!-- /lobbyScreen -->
+
+
+<!-- ══════════════════════════════════
+     GAME SCREEN
+══════════════════════════════════ -->
+<div id="gameScreen" style="display:none;">
+  <div style="height:max(var(--safe-t),47px);flex-shrink:0;"></div>
+
+  <!-- Kartu Atas (lawan) -->
+  <div class="pcard" id="cardTop">
+    <div class="pav ai" id="avTop">🤖</div>
+    <div class="pinfo">
+      <div class="pname" id="nameTop">AI</div>
+      <div class="pname-sub" id="subTop">
+        <span class="diff-badge easy" id="diffBadge">Mudah</span>
+      </div>
+      <div class="pcaps" id="capsTop"></div>
+    </div>
+    <div class="ptimer-wrap">
+      <div class="ptime" id="timeTop">10:00</div>
+      <div class="pstat" id="statTop">Menunggu</div>
+    </div>
+    <div class="ai-thinking" id="aiThinking">
+      <div class="think-dot"></div>
+      <div class="think-dot"></div>
+      <div class="think-dot"></div>
+    </div>
+  </div>
+
+  <!-- Papan -->
+  <div class="board-area">
+    <canvas id="gameCanvas"></canvas>
+  </div>
+
+  <!-- Kartu Bawah (pemain) -->
+  <div class="pcard" id="cardBot">
+    <div class="pav w" id="avBot">♔</div>
+    <div class="pinfo">
+      <div class="pname" id="nameBot">Anda</div>
+      <div class="pname-sub" id="subBot">Putih · Pemain</div>
+      <div class="pcaps" id="capsBot"></div>
+    </div>
+    <div class="ptimer-wrap">
+      <div class="ptime" id="timeBot">10:00</div>
+      <div class="pstat" id="statBot">Giliran</div>
+    </div>
+  </div>
+
+  <!-- Kontrol -->
+  <div class="controls">
+    <button class="cbtn" onclick="doUndo()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" d="M9 14L4 9l5-5"/>
+        <path stroke-linecap="round" d="M4 9h10.5a5.5 5.5 0 010 11H11"/>
+      </svg>
+      Undo
+    </button>
+    <button class="cbtn" id="hintBtn" onclick="doHint()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <path stroke-linecap="round"
+              d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707
+                 M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0
+                 l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531
+                 c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+      </svg>
+      Hint
+    </button>
+    <button class="cbtn" onclick="openMenu()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <line x1="3" y1="6"  x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+      Menu
+    </button>
+    <button class="cbtn prim" onclick="goLobby()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <path stroke-linecap="round"
+              d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/>
+      </svg>
+      Lobby
+    </button>
+  </div>
+
+  <div class="safe-b"></div>
+</div><!-- /gameScreen -->
+
+
+<!-- ══════════════════════════════════
+     TOAST
+══════════════════════════════════ -->
+<div class="toast" id="toast"></div>
+
+
+<!-- ══════════════════════════════════
+     OVERLAY + MENU SHEET
+══════════════════════════════════ -->
+<div class="overlay" id="menuOverlay" onclick="closeMenu()"></div>
+
+<div class="sheet" id="menuSheet">
+  <div class="sh-handle"></div>
+  <div class="sh-hdr">
+    <span class="sh-title">Menu</span>
+    <button class="sh-x" onclick="closeMenu()">✕</button>
+  </div>
+  <div class="sh-body">
+
+    <button class="mi" onclick="closeMenu();newGameSameSettings()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0
+                 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+      </svg>
+      <span class="mi-label">Main Lagi</span>
+      <span class="mi-val" id="menuMode">vs AI</span>
+    </button>
+
+    <button class="mi" onclick="closeMenu();doUndo()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" d="M9 14L4 9l5-5"/>
+        <path stroke-linecap="round" d="M4 9h10.5a5.5 5.5 0 010 11H11"/>
+      </svg>
+      <span class="mi-label">Undo Langkah</span>
+      <span class="mi-val" id="menuUndoCnt">0 move</span>
+    </button>
+
+    <button class="mi" onclick="closeMenu();doFlip()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round"
+              d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/>
+      </svg>
+      <span class="mi-label">Balik Papan</span>
+      <span class="mi-val" id="menuFlip">Normal</span>
+    </button>
+
+    <div class="m-sep"></div>
+
+    <div class="tog-row">
+      <span class="tog-label">🔊 Efek Suara</span>
+      <button class="tog on" id="togSound" onclick="toggleSound()"></button>
+    </div>
+    <div class="tog-row">
+      <span class="tog-label">💡 Assist Mode</span>
+      <button class="tog" id="togAssist" onclick="toggleAssist()"></button>
+    </div>
+
+    <div class="m-sep"></div>
+
+    <div class="sheet-sub-label">Waktu Per Pemain</div>
+    <div class="time-opts">
+      <button class="topt"    data-m="3"  onclick="inGameSetTime(3)">3 mnt</button>
+      <button class="topt"    data-m="5"  onclick="inGameSetTime(5)">5 mnt</button>
+      <button class="topt on" data-m="10" onclick="inGameSetTime(10)">10 mnt</button>
+      <button class="topt"    data-m="15" onclick="inGameSetTime(15)">15 mnt</button>
+      <button class="topt"    data-m="0"  onclick="inGameSetTime(0)">∞</button>
+    </div>
+
+    <div class="m-sep"></div>
+
+    <button class="mi" onclick="closeMenu();resignGame()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" d="M3 21V7l9-4 9 4v14M9 21V12h6v9"/>
+      </svg>
+      <span class="mi-label" style="color:var(--red)">Menyerah</span>
+    </button>
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     MODAL: Promosi Pion
+══════════════════════════════════ -->
+<div class="modal" id="promoModal">
+  <div class="mc">
+    <span class="m-icon">👑</span>
+    <div class="m-title">Promosi Pion!</div>
+    <div class="m-msg">Pilih bidak pengganti</div>
+    <div class="promo-grid">
+      <button class="pbtn" data-p="queen">
+        <div class="p-icon" id="pQ">♕</div>
+        <div class="p-name">Ratu</div>
+      </button>
+      <button class="pbtn" data-p="rook">
+        <div class="p-icon" id="pR">♖</div>
+        <div class="p-name">Benteng</div>
+      </button>
+      <button class="pbtn" data-p="bishop">
+        <div class="p-icon" id="pB">♗</div>
+        <div class="p-name">Gajah</div>
+      </button>
+      <button class="pbtn" data-p="knight">
+        <div class="p-icon" id="pN">♘</div>
+        <div class="p-name">Kuda</div>
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     MODAL: Akhir Permainan
+══════════════════════════════════ -->
+<div class="modal" id="endModal">
+  <div class="mc">
+    <span class="m-icon" id="endIcon">🏆</span>
+    <div class="m-title" id="endTitle">Selesai!</div>
+    <div class="m-msg"   id="endMsg">Putih menang!</div>
+    <div class="m-stats">
+      <div class="m-stat">
+        <div class="m-stat-val"   id="statMoves">0</div>
+        <div class="m-stat-label">Langkah</div>
+      </div>
+      <div class="m-stat">
+        <div class="m-stat-val"   id="statCaps">0</div>
+        <div class="m-stat-label">Tangkapan</div>
+      </div>
+      <div class="m-stat">
+        <div class="m-stat-val"   id="statTime">0:00</div>
+        <div class="m-stat-label">Durasi</div>
+      </div>
+    </div>
+    <div class="m-btns">
+      <button class="mb home"  onclick="closeModal('endModal');goLobby()">🏠 Lobby</button>
+      <button class="mb ghost" onclick="closeModal('endModal')">Lihat</button>
+      <button class="mb prim"  onclick="closeModal('endModal');newGameSameSettings()">Main Lagi</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     SCRIPTS — urutan penting!
+     1. audio    — tidak bergantung apapun
+     2. engine   — tidak bergantung apapun
+     3. ai       — butuh Engine
+     4. renderer — butuh Engine, curTheme (dari ui.js)
+     5. timer    — butuh GS, Game
+     6. game     — butuh semua di atas
+     7. ui       — butuh semua di atas + deklarasi curTheme
+══════════════════════════════════ -->
+<script src="js/audio.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/timer.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
 
 </body>
-
 </html>
