@@ -85,7 +85,7 @@ const LEVELS = [
     ]
   },
   {
-    name: "Level 6",
+    name: "Level 7",
     map: [
       "    #####",
       "#####   #",
@@ -94,4 +94,6 @@ const LEVELS = [
       "##  @.  #",
       " ####   #",
       "    #####",
+    ]
+  }
 ];
