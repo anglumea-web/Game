@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="id" data-theme="CRT">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>SOKOBAN // PUSH — Puzzle Dorong Kotak Retro</title>
+    <meta name="description" content="Sokoban retro 90-an: 18 level dorong kotak, undo, hint bertingkat, tema CRT/PAPER/MONO. Main langsung di browser, offline." />
+    <meta name="theme-color" content="#181818" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <!-- BOOT -->
+      <section id="screen-boot" class="screen active">
+        <div style="margin: auto; text-align: center">
+          <h1 class="title">SOKOBAN</h1>
+          <p class="subtitle">// PUSH</p>
+          <p class="small blink" style="margin-top: 28px">PRESS START</p>
+          <button id="btn-start" class="primary" style="margin-top: 18px">START</button>
+        </div>
+      </section>
+
+      <!-- MENU -->
+      <section id="screen-menu" class="screen">
+        <div style="margin-top: 24px">
+          <h1 class="title">SOKOBAN</h1>
+          <p class="subtitle">// PUSH</p>
+        </div>
+        <div class="menu">
+          <button id="btn-continue" class="primary">LANJUTKAN</button>
+          <button data-goto="levels">PILIH LEVEL</button>
+          <button data-goto="stats">STATISTIK</button>
+          <button data-goto="settings">PENGATURAN</button>
+        </div>
+        <p class="small" style="margin-top: auto; text-align: center">
+          No timer. No lives. No noise. Just one box at a time.
+        </p>
+      </section>
+
+      <!-- LEVELS -->
+      <section id="screen-levels" class="screen">
+        <div class="row between">
+          <button data-goto="menu">&lt; KEMBALI</button>
+          <span class="small">PILIH LEVEL</span>
+        </div>
+        <div id="level-list"></div>
+      </section>
+
+      <!-- STATS -->
+      <section id="screen-stats" class="screen">
+        <div class="row between">
+          <button data-goto="menu">&lt; KEMBALI</button>
+          <span class="small">STATISTIK</span>
+        </div>
+        <div id="stats-body" class="list"></div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section id="screen-settings" class="screen">
+        <div class="row between">
+          <button data-goto="menu">&lt; KEMBALI</button>
+          <span class="small">PENGATURAN</span>
+        </div>
+        <div class="list">
+          <button id="opt-sfx">EFEK SUARA: ON</button>
+          <button id="opt-vibration">GETAR: ON</button>
+          <button id="opt-crt">EFEK SCANLINE: OFF</button>
+          <div class="panel">
+            <p class="small" style="margin: 0 0 8px">TEMA</p>
+            <div class="row" id="theme-row"></div>
+          </div>
+          <button id="opt-reset">HAPUS SEMUA PROGRES</button>
+        </div>
+      </section>
+
+      <!-- PLAY -->
+      <section id="screen-play" class="screen">
+        <div class="row between">
+          <button data-goto="menu">&lt; MENU</button>
+          <span id="play-title" class="small"></span>
+        </div>
+        <div class="panel hud">
+          <div>LANGKAH<b id="hud-moves">0</b></div>
+          <div>DORONG<b id="hud-pushes">0</b></div>
+          <div>PAR<b id="hud-par">0</b></div>
+          <div>KOTAK<b id="hud-boxes">0/0</b></div>
+        </div>
+        <div class="board-wrap" id="board-wrap">
+          <canvas id="board"></canvas>
+          <div id="crt" class="crt-overlay hidden"></div>
+        </div>
+        <p id="hint-text" class="hint"></p>
+        <div class="row" style="justify-content: center">
+          <button id="btn-undo">UNDO</button>
+          <button id="btn-reset">RESET</button>
+          <button id="btn-hint">? HINT</button>
+        </div>
+        <div class="dpad">
+          <span class="spacer"></span>
+          <button data-dx="0" data-dy="-1" aria-label="Atas">&#9650;</button>
+          <span class="spacer"></span>
+          <button data-dx="-1" data-dy="0" aria-label="Kiri">&#9664;</button>
+          <span class="spacer"></span>
+          <button data-dx="1" data-dy="0" aria-label="Kanan">&#9654;</button>
+          <span class="spacer"></span>
+          <button data-dx="0" data-dy="1" aria-label="Bawah">&#9660;</button>
+          <span class="spacer"></span>
+        </div>
+        <p class="small" style="text-align: center">
+          KEYBOARD: PANAH / WASD &middot; U = UNDO &middot; R = RESET &middot; H = HINT
+        </p>
+      </section>
+    </div>
+
+    <!-- WIN OVERLAY -->
+    <div id="overlay-win" class="overlay hidden">
+      <div class="panel">
+        <h2 class="title" style="font-size: 20px">CLEAR!</h2>
+        <p id="win-stars" class="stars-big"></p>
+        <p id="win-stats" class="small"></p>
+        <div id="win-ach" class="list"></div>
+        <!-- SLOT IKLAN: hanya tampil setelah level selesai -->
+        <div id="ad-slot" class="ad-slot"></div>
+        <button id="btn-next" class="primary">LEVEL BERIKUTNYA</button>
+        <button id="btn-replay">ULANGI</button>
+        <button data-goto="menu">MENU</button>
+      </div>
+    </div>
+
+    <script src="js/levels.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/solver.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/render.js"></script>
+    <script src="js/ads.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
